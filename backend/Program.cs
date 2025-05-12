@@ -44,11 +44,8 @@ app.MapGet("/account-data", async (SchwabApiService api) =>
 
 app.UseHttpsRedirection();
 
-app.MapPost("/upload", async (HttpRequest request) =>
+app.MapPost("/upload", async (IFormFile file) =>
 {
-    var form = await request.ReadFormAsync();
-    var file = form.Files.FirstOrDefault();
-
     if (file == null || file.Length == 0)
         return Results.BadRequest("No file uploaded.");
 
@@ -60,11 +57,11 @@ app.MapPost("/upload", async (HttpRequest request) =>
     using var stream = new FileStream(filePath, FileMode.Create);
     await file.CopyToAsync(stream);
 
+
     return Results.Ok($"File uploaded: {file.FileName}");
 })
+.DisableAntiforgery()
 .Accepts<IFormFile>("multipart/form-data")
 .Produces(StatusCodes.Status200OK)
 .Produces(StatusCodes.Status400BadRequest);
-
-
 app.Run();

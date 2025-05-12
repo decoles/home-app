@@ -1,15 +1,23 @@
 import './App.css'
-import Sidebar from './components/Sidebar'
-import MainContent from './components/Home'
+import React, { useState } from 'react';
+import Header from './components/Header'
+import Footer from './components/Footer';
+import Financial from './components/Financial'
 
-function App() {
-  
+const App: React.FC = () => {
+  const [page, setPage] = useState('financial');
+
   return (
-    <div className="flex h-screen bg-gray-900 text-white">
-      <Sidebar />
-      <MainContent />
-    </div>
-  )
-}
+    <div className="flex flex-col h-screen bg-gray-900 text-white">
+      <Header username="Genna" />
 
-export default App
+      <main className="flex-1 overflow-auto">
+        <Financial />
+      </main>
+
+      <Footer onNavigate={setPage} />
+    </div>
+  );
+};
+
+export default App;

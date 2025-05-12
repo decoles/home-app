@@ -414,3 +414,5 @@ sketch
 *.env
 
 appsetting.json
+
+*.py
