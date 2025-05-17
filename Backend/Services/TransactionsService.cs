@@ -2,6 +2,7 @@ using System.Text.Json;
 using Backend.Models;
 using Backend.Utilities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Backend.Services;
@@ -13,7 +14,7 @@ public class TransactionsService
 
     public TransactionsService(AppDbContext db, ILogger<TransactionsService> logger)
     {
-        _logger = logger; 
+        _logger = logger;
         _db = db;
     }
 
@@ -31,15 +32,35 @@ public class TransactionsService
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
         );
 
-        _logger.LogInformation($"Parsed {postedTransactions} transactions from JSON.\n");
-        _logger.LogInformation($"PostedTransactions: {postedTransactionsElement.GetRawText()}");
+        if (postedTransactions == null || postedTransactions.Count == 0)
+            return new List<TransactionRecord>();
 
-        if (postedTransactions != null && postedTransactions.Any())
+        var existingTransactions = await _db.Transactions.ToListAsync();
+
+        var newTransactions = postedTransactions
+            .Where(pt => !existingTransactions.Any(et =>
+                et.Date == pt.Date &&
+                et.Description == pt.Description &&
+                et.Withdrawal == pt.Withdrawal &&
+                et.Deposit == pt.Deposit &&
+                et.RunningBalance == pt.RunningBalance &&
+                et.Type == pt.Type &&
+                et.CheckNumber == pt.CheckNumber &&
+                et.Status == pt.Status
+            ))
+            .ToList();
+
+        if (newTransactions.Any())
         {
-            _db.AddRange(postedTransactions);
+            _db.Transactions.AddRange(newTransactions);
             await _db.SaveChangesAsync();
         }
+        else
+        {
+            _logger.LogInformation("No new transactions to add.");
+        }
+        _logger.LogInformation($"Uploaded {newTransactions.Count} transaction records.");
 
-        return postedTransactions ?? new List<TransactionRecord>();
+        return newTransactions;
     }
 }

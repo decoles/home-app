@@ -15,14 +15,11 @@ namespace Backend.Controllers;
 [Route("api/[controller]")]
 public class UploadController : ControllerBase
 {
-    private readonly AppDbContext _db;
     private readonly TransactionsService _transactions;
 
-    public UploadController(AppDbContext db, TransactionsService transactions)
+    public UploadController(TransactionsService transactions)
     {
-        _db = db;
         _transactions = transactions;
-
     }
 
     [HttpPost("json")]
@@ -30,7 +27,7 @@ public class UploadController : ControllerBase
     public async Task<IActionResult> UploadJson(IFormFile file)
     {
         if (file == null || file.Length == 0 || !file.FileName.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
-            return BadRequest("Invalid file. Only .csv files are allowed.");
+            return BadRequest("Invalid file. Only .json files are allowed.");
         
         var results = await _transactions.HandleJson(file);
 

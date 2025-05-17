@@ -19,6 +19,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<TransactionsService>();
+builder.Services.AddScoped<FinancialService>();
 
 var app = builder.Build();
 
@@ -40,19 +41,9 @@ _ = Task.Run(async () =>
     }
 });
 
-app.MapGet("/account-data", async (SchwabApiService api) =>
-{
-    var data = await api.GetAccountDataAsync();
-    return data ?? "Failed to fetch account data.";
-});
-
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthorization();
 app.MapControllers();  
-app.UseEndpoints(endpoints => 
-{ 
-    endpoints.MapControllers();
-});
 
 app.Run();

@@ -17,9 +17,7 @@ public class SchwabTokenRefresher
         _logger = logger;
         _httpClient = httpClient;
 
-        // Load env variables
         DotEnv.Load(options: new DotEnvOptions(envFilePaths: new[] { Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "secrets.env") }));
-
     }
 
     public async Task<string?> RefreshTokensAsync()

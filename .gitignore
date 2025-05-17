@@ -416,3 +416,5 @@ sketch
 appsetting.json
 
 *.py
+
+*.db

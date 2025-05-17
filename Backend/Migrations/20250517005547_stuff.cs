@@ -5,7 +5,7 @@
 namespace siteBacked.Migrations
 {
     /// <inheritdoc />
-    public partial class InitalCreate : Migration
+    public partial class stuff : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
