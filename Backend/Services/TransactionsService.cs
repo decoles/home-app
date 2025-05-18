@@ -35,6 +35,19 @@ public class TransactionsService
         if (postedTransactions == null || postedTransactions.Count == 0)
             return new List<TransactionRecord>();
 
+        foreach (var tx in postedTransactions)
+        {
+            if (!string.IsNullOrEmpty(tx.Deposit))
+            {
+                tx.Deposit = tx.Deposit.Replace("$", "").Replace(",", "").Trim();
+            }
+
+            if (!string.IsNullOrEmpty(tx.Withdrawal))
+            {
+                tx.Withdrawal = tx.Withdrawal.Replace("$", "").Replace(",", "").Trim();
+            }
+        }
+
         var existingTransactions = await _db.Transactions.ToListAsync();
 
         var newTransactions = postedTransactions

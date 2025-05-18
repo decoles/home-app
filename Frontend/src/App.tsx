@@ -11,7 +11,7 @@ const App: React.FC = () => {
     <div className="flex flex-col h-screen bg-gray-900 text-white">
       <Header username="Genna" />
 
-      <main className="flex-1 overflow-auto">
+      <main className="">
         <Financial />
       </main>
 
