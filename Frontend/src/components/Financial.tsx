@@ -44,86 +44,91 @@ const Financial: React.FC = () => {
   }, [month]);
 
   return (
-    <main className="flex flex-col overflow-hidden bg-gray-900 text-white min-h-screen">
-      <h1 className="text-2xl font-bold m-4">Financial Dashboard</h1>
+<main className="h-screen bg-gray-900 text-white overflow-hidden flex flex-col">
+  <h1 className="text-2xl font-bold m-4">Financial Dashboard</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 m-4">
-        {/* Spending Summary */}
-        <div className="bg-gray-800 p-4 rounded-lg shadow-sm">
-          <h2 className="font-semibold">Total Spending for {month}</h2>
-          <p className={`text-lg mt-1 ${redSpending ? 'text-red-500' : 'text-green-400'}`}>
-            Spent: ${totalWithdrawals.toFixed(2)}
-          </p>
+  {/* 3-column layout with only right column full height */}
+  <div className="grid grid-cols-1 md:grid-cols-[auto_auto_1fr] gap-4 px-4 flex-1 overflow-hidden">
+    
+    {/* Spending (auto height) */}
+    <div className="bg-gray-800 p-4 rounded-lg shadow-sm self-start">
+      <h2 className="font-semibold">Total Spending for {month}</h2>
+      <p className={`text-lg mt-1 ${redSpending ? 'text-red-500' : 'text-green-400'}`}>
+        Spent: ${totalWithdrawals.toFixed(2)}
+      </p>
+    </div>
+
+    {/* Income (auto height) */}
+    <div className="bg-gray-800 p-4 rounded-lg shadow-sm self-start">
+      <h2 className="font-semibold">Total Income for {month}</h2>
+      <p className="text-lg mt-1 text-green-400">
+        Income: ${totalDeposits.toFixed(2)}
+      </p>
+    </div>
+
+    {/* Transactions (takes full remaining vertical space) */}
+    <div className="bg-gray-800 p-4 rounded-lg shadow-sm flex flex-col h-full overflow-hidden">
+      <h3 className="text-lg font-semibold mb-4">Transactions for {month}</h3>
+
+      {loading ? (
+        <p className="text-gray-400">Loading...</p>
+      ) : error ? (
+        <p className="text-red-400">{error}</p>
+      ) : (
+        <div className="flex-1 flex flex-col gap-4 overflow-hidden">
+          {/* Withdrawals */}
+          <div className="flex-1 overflow-y-auto">
+            <h4 className="text-md font-semibold mb-2">Withdrawals</h4>
+            <table className="w-full table-auto text-left text-sm">
+              <thead className="bg-gray-700 text-gray-300 sticky top-0">
+                <tr>
+                  <th className="p-2">Date</th>
+                  <th className="p-2">Description</th>
+                  <th className="p-2">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transactions.filter(tx => tx.withdrawal).map((tx, index) => (
+                  <tr key={`withdrawal-${index}`} className="border-b border-gray-700 text-gray-300">
+                    <td className="p-2">{tx.date}</td>
+                    <td className="p-2">{tx.description}</td>
+                    <td className="p-2 text-red-400">{tx.withdrawal}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Deposits */}
+          <div className="flex-1 overflow-y-auto">
+            <h4 className="text-md font-semibold mb-2">Deposits</h4>
+            <table className="w-full table-auto text-left text-sm">
+              <thead className="bg-gray-700 text-gray-300 sticky top-0">
+                <tr>
+                  <th className="p-2">Date</th>
+                  <th className="p-2">Description</th>
+                  <th className="p-2">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transactions.filter(tx => tx.deposit).map((tx, index) => (
+                  <tr key={`deposit-${index}`} className="border-b border-gray-700 text-gray-300">
+                    <td className="p-2">{tx.date}</td>
+                    <td className="p-2">{tx.description}</td>
+                    <td className="p-2 text-green-400">{tx.deposit}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
+      )}
+    </div>
+  </div>
+</main>
 
-        {/* Income Summary */}
-        <div className="bg-gray-800 p-4 rounded-lg shadow-sm">
-          <h2 className="font-semibold">Total Income for {month}</h2>
-          <p className="text-lg mt-1 text-green-400">
-            Income: ${totalDeposits.toFixed(2)}
-          </p>
-        </div>
 
-        {/* Transactions */}
-        <div className="bg-gray-800 p-4 rounded-lg shadow-sm">
-          <h3 className="text-lg font-semibold mb-4">Transactions for {month}</h3>
 
-          {loading ? (
-            <p className="text-gray-400">Loading...</p>
-          ) : error ? (
-            <p className="text-red-400">{error}</p>
-          ) : (
-            <div className="flex flex-col gap-4">
-              {/* Withdrawals */}
-              <div className="max-h-[200px] overflow-y-auto">
-                <h4 className="text-md font-semibold mb-2">Withdrawals</h4>
-                <table className="w-full table-auto text-left text-sm">
-                  <thead className="bg-gray-700 text-gray-300 sticky top-0">
-                    <tr>
-                      <th className="p-2">Date</th>
-                      <th className="p-2">Description</th>
-                      <th className="p-2">Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {transactions.filter(tx => tx.withdrawal).map((tx, index) => (
-                      <tr key={`withdrawal-${index}`} className="border-b border-gray-700 text-gray-300">
-                        <td className="p-2">{tx.date}</td>
-                        <td className="p-2">{tx.description}</td>
-                        <td className="p-2 text-red-400">{tx.withdrawal}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Deposits */}
-              <div className="max-h-[200px] overflow-y-auto">
-                <h4 className="text-md font-semibold mb-2">Deposits</h4>
-                <table className="w-full table-auto text-left text-sm">
-                  <thead className="bg-gray-700 text-gray-300 sticky top-0">
-                    <tr>
-                      <th className="p-2">Date</th>
-                      <th className="p-2">Description</th>
-                      <th className="p-2">Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {transactions.filter(tx => tx.deposit).map((tx, index) => (
-                      <tr key={`deposit-${index}`} className="border-b border-gray-700 text-gray-300">
-                        <td className="p-2">{tx.date}</td>
-                        <td className="p-2">{tx.description}</td>
-                        <td className="p-2 text-green-400">{tx.deposit}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </main>
   );
 };
 
