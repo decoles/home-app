@@ -62,7 +62,7 @@ const Header: React.FC<{ username: string }> = ({ username }) => {
               </button>
             <button
               onClick={() => setTagModalOpen(true)}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-600"
             >
               Tag Transactions
             </button>

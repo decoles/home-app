@@ -17,7 +17,7 @@ namespace Backend.Controllers;
 public class FinancialController : ControllerBase
 {
     private readonly FinancialService _financialService;
-    
+
     public FinancialController(FinancialService financialService)
     {
         _financialService = financialService;
@@ -40,5 +40,27 @@ public class FinancialController : ControllerBase
         if (results == null)
             return NotFound("No transaction data found.");
         return Ok(results);
+    }
+
+    [HttpPost("set-tags")]
+    public async Task<IActionResult> SetTags([FromBody] List<Tag> tags)
+    {
+        if (tags == null || tags.Count == 0)
+            return BadRequest("No tags provided.");
+
+        var result = await _financialService.SetTagsAsync(tags);
+        if (!result)
+            return StatusCode(StatusCodes.Status500InternalServerError, "Failed to set tags.");
+
+        return Ok("Tags set successfully.");
+    }
+
+    [HttpGet("get-tags")]
+    public async Task<IActionResult> GetTags()
+    {
+        var t = await _financialService.GetTagsAsync();
+        if (t == null || t.Count == 0)
+            return  StatusCode(StatusCodes.Status204NoContent, "No Tags found.");
+        return Ok(t);
     }
 }
