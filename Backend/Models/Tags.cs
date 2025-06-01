@@ -6,3 +6,9 @@ public class Tag
     public string Name { get; set; } = string.Empty;
     public ICollection<TransactionRecord> Transactions { get; set; } = new List<TransactionRecord>();
 }
+
+public class TagUpdateDto
+{
+    public int TransactionId { get; set; }
+    public List<string> Tags { get; set; } = new();
+}

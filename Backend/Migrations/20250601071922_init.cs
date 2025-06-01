@@ -44,7 +44,7 @@ namespace siteBacked.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TransactionTags",
+                name: "TagTransactionRecord",
                 columns: table => new
                 {
                     TagsId = table.Column<int>(type: "INTEGER", nullable: false),
@@ -52,15 +52,15 @@ namespace siteBacked.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TransactionTags", x => new { x.TagsId, x.TransactionsId });
+                    table.PrimaryKey("PK_TagTransactionRecord", x => new { x.TagsId, x.TransactionsId });
                     table.ForeignKey(
-                        name: "FK_TransactionTags_Tags_TagsId",
+                        name: "FK_TagTransactionRecord_Tags_TagsId",
                         column: x => x.TagsId,
                         principalTable: "Tags",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TransactionTags_Transactions_TransactionsId",
+                        name: "FK_TagTransactionRecord_Transactions_TransactionsId",
                         column: x => x.TransactionsId,
                         principalTable: "Transactions",
                         principalColumn: "Id",
@@ -68,8 +68,8 @@ namespace siteBacked.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TransactionTags_TransactionsId",
-                table: "TransactionTags",
+                name: "IX_TagTransactionRecord_TransactionsId",
+                table: "TagTransactionRecord",
                 column: "TransactionsId");
         }
 
@@ -77,7 +77,7 @@ namespace siteBacked.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "TransactionTags");
+                name: "TagTransactionRecord");
 
             migrationBuilder.DropTable(
                 name: "Tags");

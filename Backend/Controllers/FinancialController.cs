@@ -43,16 +43,16 @@ public class FinancialController : ControllerBase
     }
 
     [HttpPost("set-tags")]
-    public async Task<IActionResult> SetTags([FromBody] List<Tag> tags)
+    public async Task<IActionResult> SetTags([FromBody] TagUpdateDto dto)
     {
-        if (tags == null || tags.Count == 0)
+        if (dto.Tags == null || dto.Tags.Count == 0)
             return BadRequest("No tags provided.");
 
-        var result = await _financialService.SetTagsAsync(tags);
+        var result = await _financialService.SetTagsForTransactionAsync(dto.TransactionId, dto.Tags);
         if (!result)
             return StatusCode(StatusCodes.Status500InternalServerError, "Failed to set tags.");
 
-        return Ok("Tags set successfully.");
+        return Ok("Tags updated successfully.");
     }
 
     [HttpGet("get-tags")]

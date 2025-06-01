@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace siteBacked.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250601044320_init")]
+    [Migration("20250601071922_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -81,7 +81,7 @@ namespace siteBacked.Migrations
 
                     b.HasIndex("TransactionsId");
 
-                    b.ToTable("TransactionTags", (string)null);
+                    b.ToTable("TagTransactionRecord");
                 });
 
             modelBuilder.Entity("TagTransactionRecord", b =>
