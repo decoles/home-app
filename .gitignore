@@ -418,3 +418,5 @@ appsetting.json
 *.py
 
 *.db
+*db-wal 
+*db-shm

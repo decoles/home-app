@@ -40,9 +40,6 @@ namespace siteBacked.Migrations
                     b.Property<string>("Status")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Tags")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Type")
                         .HasColumnType("TEXT");
 
@@ -52,6 +49,51 @@ namespace siteBacked.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Transactions");
+                });
+
+            modelBuilder.Entity("Tag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tags");
+                });
+
+            modelBuilder.Entity("TagTransactionRecord", b =>
+                {
+                    b.Property<int>("TagsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TransactionsId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("TagsId", "TransactionsId");
+
+                    b.HasIndex("TransactionsId");
+
+                    b.ToTable("TransactionTags", (string)null);
+                });
+
+            modelBuilder.Entity("TagTransactionRecord", b =>
+                {
+                    b.HasOne("Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.TransactionRecord", null)
+                        .WithMany()
+                        .HasForeignKey("TransactionsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
