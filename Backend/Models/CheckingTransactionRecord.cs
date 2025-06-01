@@ -11,4 +11,5 @@ public class TransactionRecord
     public string? Withdrawal { get; set; }
     public string? Deposit { get; set; }
     public string? RunningBalance { get; set; }
+    public string? Tags { get; set; }
 }

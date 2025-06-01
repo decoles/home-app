@@ -5,7 +5,7 @@
 namespace siteBacked.Migrations
 {
     /// <inheritdoc />
-    public partial class stuff : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -23,7 +23,8 @@ namespace siteBacked.Migrations
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     Withdrawal = table.Column<string>(type: "TEXT", nullable: true),
                     Deposit = table.Column<string>(type: "TEXT", nullable: true),
-                    RunningBalance = table.Column<string>(type: "TEXT", nullable: true)
+                    RunningBalance = table.Column<string>(type: "TEXT", nullable: true),
+                    Tags = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

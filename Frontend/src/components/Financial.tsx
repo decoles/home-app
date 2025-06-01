@@ -21,12 +21,12 @@ const Financial: React.FC = () => {
         if (res.status !== 200) {
           throw new Error('Failed to fetch transaction data');
         }
-        const schwabData = await axios.get(`/api/Financial/transaction-data`);
-        if (schwabData.status !== 200) {
-          throw new Error('Failed to fetch Schwab data');
-        }
+        // const schwabData = await axios.get(`/api/Financial/transaction-data`);
+        // if (schwabData.status !== 200) {
+        //   throw new Error('Failed to fetch Schwab data');
+        // }
 
-        console.log('Schwab data:', schwabData.data);
+        // console.log('Schwab data:', schwabData.data);
         const data = Array.isArray(res.data) ? res.data : [];
         console.log('Transaction data:', data);
         setTransactions(data);

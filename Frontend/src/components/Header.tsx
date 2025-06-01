@@ -5,6 +5,8 @@ import axios from 'axios';
 
 const Header: React.FC<{ username: string }> = ({ username }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [tagModalOpen, setTagModalOpen] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const toggleMenu = () => setMenuOpen(prev => !prev);
@@ -58,7 +60,12 @@ const Header: React.FC<{ username: string }> = ({ username }) => {
               >
                 Upload File
               </button>
-              {/* Add more menu items here */}
+            <button
+              onClick={() => setTagModalOpen(true)}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Tag Transactions
+            </button>
             </div>
           )}
         </div>
@@ -73,6 +80,8 @@ const Header: React.FC<{ username: string }> = ({ username }) => {
         <LockIcon className="hover:text-green-400 cursor-pointer" fontSize="small" />
       </div>
     </header>
+
+    
   );
 };
 

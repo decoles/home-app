@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace siteBacked.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250518044536_stuff")]
-    partial class stuff
+    [Migration("20250601003747_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,6 +41,9 @@ namespace siteBacked.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Status")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Tags")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Type")
