@@ -40,38 +40,4 @@ public class FinancialService
 
         return transactions;
     }
-
-    public async Task<bool> SetTagsForTransactionAsync(int transactionId, List<string> tagNames)
-    {
-        var transaction = await _db.Transactions
-            .Include(t => t.Tags)
-            .FirstOrDefaultAsync(t => t.Id == transactionId);
-
-        if (transaction == null) return false;
-
-        // Clear old tags if needed
-        transaction.Tags.Clear();
-
-        foreach (var tagName in tagNames)
-        {
-            var tag = await _db.Tags.FirstOrDefaultAsync(t => t.Name == tagName);
-            if (tag == null)
-            {
-                tag = new Tag { Name = tagName };
-                _db.Tags.Add(tag);
-            }
-
-            transaction.Tags.Add(tag);
-        }
-
-        return await _db.SaveChangesAsync() > 0;
-    }
-
-    public async Task<List<Tag>> GetTagsAsync()
-    {
-        var tags = await _db.Tags
-            .Include(t => t.Transactions)
-            .ToListAsync();
-        return tags;
-    }
 }

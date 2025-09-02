@@ -20,14 +20,14 @@ public class TransactionsService
 
     public async Task<List<TransactionRecord>> HandleJson(IFormFile file)
     {
-        using var stream = new StreamReader(file.OpenReadStream());
+        using StreamReader stream = new StreamReader(file.OpenReadStream());
 
-        using var document = JsonDocument.Parse(await stream.ReadToEndAsync());
-        var root = document.RootElement;
+        using JsonDocument document = JsonDocument.Parse(await stream.ReadToEndAsync());
+        JsonElement root = document.RootElement;
 
-        var postedTransactionsElement = root.GetProperty("PostedTransactions");
+        JsonElement postedTransactionsElement = root.GetProperty("PostedTransactions");
 
-        var postedTransactions = JsonSerializer.Deserialize<List<TransactionRecord>>(
+        List<TransactionRecord> postedTransactions = JsonSerializer.Deserialize<List<TransactionRecord>>(
             postedTransactionsElement.GetRawText(),
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
         );
@@ -35,7 +35,7 @@ public class TransactionsService
         if (postedTransactions == null || postedTransactions.Count == 0)
             return new List<TransactionRecord>();
 
-        foreach (var tx in postedTransactions)
+        foreach (TransactionRecord tx in postedTransactions)
         {
             if (!string.IsNullOrEmpty(tx.Deposit))
             {
@@ -48,9 +48,9 @@ public class TransactionsService
             }
         }
 
-        var existingTransactions = await _db.Transactions.ToListAsync();
+        List<TransactionRecord> existingTransactions = await _db.Transactions.ToListAsync();
 
-        var newTransactions = postedTransactions
+        List<TransactionRecord> newTransactions = postedTransactions
             .Where(pt => !existingTransactions.Any(et =>
                 et.Date == pt.Date &&
                 et.Description == pt.Description &&

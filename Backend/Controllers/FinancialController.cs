@@ -41,26 +41,4 @@ public class FinancialController : ControllerBase
             return NotFound("No transaction data found.");
         return Ok(results);
     }
-
-    [HttpPost("set-tags")]
-    public async Task<IActionResult> SetTags([FromBody] TagUpdateDto dto)
-    {
-        if (dto.Tags == null || dto.Tags.Count == 0)
-            return BadRequest("No tags provided.");
-
-        var result = await _financialService.SetTagsForTransactionAsync(dto.TransactionId, dto.Tags);
-        if (!result)
-            return StatusCode(StatusCodes.Status500InternalServerError, "Failed to set tags.");
-
-        return Ok("Tags updated successfully.");
-    }
-
-    [HttpGet("get-tags")]
-    public async Task<IActionResult> GetTags()
-    {
-        var t = await _financialService.GetTagsAsync();
-        if (t == null || t.Count == 0)
-            return  StatusCode(StatusCodes.Status204NoContent, "No Tags found.");
-        return Ok(t);
-    }
 }
