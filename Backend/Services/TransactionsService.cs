@@ -57,9 +57,7 @@ public class TransactionsService
                 et.Withdrawal == pt.Withdrawal &&
                 et.Deposit == pt.Deposit &&
                 et.RunningBalance == pt.RunningBalance &&
-                et.Type == pt.Type &&
-                et.CheckNumber == pt.CheckNumber &&
-                et.Status == pt.Status
+                et.Type == pt.Type
             ))
             .ToList();
 
