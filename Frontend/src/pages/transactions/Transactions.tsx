@@ -39,12 +39,6 @@ const Transactions: React.FC = () => {
         </div>
         <TransactionsTable transactions={mockTransactions} />
       </div>
-
-      {/* Right side: Summary / Placeholder */}
-      <div className="w-1/3 p-4">
-        <h2 className="text-lg font-semibold">Summary / Other Content</h2>
-        <p className="text-sm text-gray-400">This section stays fixed, while the table scrolls independently.</p>
-      </div>
     </div>
   );
 };

@@ -1,10 +1,4 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Globalization;
-using System.IO;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-
 using Backend.Utilities;
 using Backend.Models;
 using Backend.Services;

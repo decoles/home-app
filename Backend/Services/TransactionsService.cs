@@ -1,9 +1,7 @@
 using System.Text.Json;
 using Backend.Models;
 using Backend.Utilities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Backend.Services;
 

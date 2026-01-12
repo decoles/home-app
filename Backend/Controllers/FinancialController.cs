@@ -1,14 +1,5 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Globalization;
-using System.IO;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-
-using Backend.Utilities;
-using Backend.Models;
 using Backend.Services;
-using System.Text.Json;
 
 namespace Backend.Controllers;
 
@@ -29,6 +20,26 @@ public class FinancialController : ControllerBase
         var results = await _financialService.GetAccountDataAsync();
         if (results == null)
             return NotFound("No account data found.");
+
+        return Ok(results);
+    }
+
+    [HttpGet("user-preferences")]
+    public async Task<IActionResult> GetUserPreferences()
+    {
+        var results = await _financialService.GetUserPreferencesAsync();
+        if (results == null)
+            return NotFound("No user preferences found.");
+
+        return Ok(results);
+    }
+
+    [HttpGet("account-value-and-nickname")]
+    public async Task<IActionResult> GetAccountValueAndNickName()
+    {
+        var results = await _financialService.GetAccountValueAndNickNameAsync();
+        if (results == null)
+            return NotFound("No account value and nickname data found.");
 
         return Ok(results);
     }

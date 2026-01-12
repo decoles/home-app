@@ -7,7 +7,8 @@ using Backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient<SchwabTokenRefresher>();
-builder.Services.AddHttpClient<SchwabApiService>();
+builder.Services.AddSingleton<SchwabTokenRefresher>();
+builder.Services.AddScoped<FinancialService>();
 
 builder.Services.AddLogging();
 builder.Services.AddEndpointsApiExplorer();
