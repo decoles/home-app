@@ -50,38 +50,5 @@ public class UploadController : ControllerBase
         return Ok($"Uploaded {results.Count} transaction records.");
     }
     
-    /// <summary>
-    /// Adds new categories to the database.
-    /// </summary>
-    /// <param name="categoryNames"></param>
-    /// <returns></returns>
-    [HttpPost("categories")]
-    public async Task<IActionResult> AddCategories([FromBody] List<string> categoryNames)
-    {
-        if (categoryNames == null || !categoryNames.Any())
-            return BadRequest("Category list is empty.");
-
-        var newCategories = new List<Categories>();
-
-        foreach (var name in categoryNames)
-        {
-            if (string.IsNullOrWhiteSpace(name)) continue;
-
-            // Skip if category already exists
-            bool exists = await _db.Categories.AnyAsync(c => c.Name.ToLower() == name.ToLower());
-            if (!exists)
-            {
-                newCategories.Add(new Categories { Name = name.Trim() });
-            }
-        }
-        
-        if (newCategories.Any())
-        {
-            await _db.Categories.AddRangeAsync(newCategories);
-            await _db.SaveChangesAsync();
-        }
-
-        return Ok($"Added {newCategories.Count} new categories.");
-    }
 }
 

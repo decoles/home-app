@@ -9,10 +9,7 @@ public class TransactionRecord
     public string? Withdrawal { get; set; }
     public string? Deposit { get; set; }
     public string? RunningBalance { get; set; }
+    public string AccountName { get; set; } = string.Empty;
     public bool isRecurring { get; set; } = false;
     public bool isIncludedInBudget { get; set; } = true;
-
-    // Foreign key to Categories
-    public int? CategoryId { get; set; }
-    public Categories? Category { get; set; }
 }

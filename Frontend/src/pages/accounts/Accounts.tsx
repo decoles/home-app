@@ -1,13 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import AccountCard from "../../components/accounts/AccountCard";
 
 interface Account {
-    id: string;
-    name: string;
-    institution: string;
-    balance: number;
-    lastUpdated: string;
-    icon: string;
-    color: string;
+    nickName: string;
+    accountValue: number;
+    type: string;
 }
 
 interface RecurringPayment {
@@ -18,15 +15,6 @@ interface RecurringPayment {
     category: string;
 }
 
-const mockAccounts: Account[] = [
-    { id: "1", name: "Checking", institution: "Schwab", balance: 15234.45, lastUpdated: "2h ago", icon: "💳", color: "bg-blue-500" },
-    { id: "2", name: "Savings", institution: "Bank of America", balance: 8450.99, lastUpdated: "1d ago", icon: "💰", color: "bg-green-500" },
-    { id: "3", name: "Emergency Fund", institution: "Capital One", balance: 5000.0, lastUpdated: "3d ago", icon: "🏦", color: "bg-purple-500" },
-    { id: "4", name: "Credit Card", institution: "Chase", balance: -1234.56, lastUpdated: "30m ago", icon: "💳", color: "bg-red-500" },
-    { id: "5", name: "Investment", institution: "Fidelity", balance: 34250.77, lastUpdated: "1w ago", icon: "📈", color: "bg-indigo-500" },
-    { id: "6", name: "Retirement", institution: "Vanguard", balance: 78500.12, lastUpdated: "2w ago", icon: "🏖️", color: "bg-orange-500" },
-];
-
 const mockRecurringPayments: RecurringPayment[] = [
     { name: "Spotify", amount: 12.99, frequency: "Monthly", nextDue: "Jan 15", category: "Entertainment" },
     { name: "Netflix", amount: 15.99, frequency: "Monthly", nextDue: "Jan 18", category: "Entertainment" },
@@ -35,9 +23,59 @@ const mockRecurringPayments: RecurringPayment[] = [
     { name: "Gym Membership", amount: 45, frequency: "Monthly", nextDue: "Jan 12", category: "Health" },
 ];
 
+// Helper function to get icon and color based on account type
+const getAccountStyle = (type: string) => {
+    switch (type.toLowerCase()) {
+        case "savings":
+            return { icon: "💰", color: "bg-green-500" };
+        case "emergency fund":
+            return { icon: "🏦", color: "bg-purple-500" };
+        case "investment":
+            return { icon: "📈", color: "bg-indigo-500" };
+        case "checking":
+            return { icon: "💳", color: "bg-blue-500" };
+        case "credit card":
+            return { icon: "💳", color: "bg-red-500" };
+        case "retirement":
+            return { icon: "🏖️", color: "bg-orange-500" };
+        default:
+            return { icon: "💵", color: "bg-gray-500" };
+    }
+};
+
 const Accounts: React.FC = () => {
-    const totalValue = mockAccounts.reduce((sum, acc) => sum + (acc.balance > 0 ? acc.balance : 0), 0);
-    const totalDebt = mockAccounts.reduce((sum, acc) => sum + (acc.balance < 0 ? acc.balance : 0), 0);
+    const [accounts, setAccounts] = useState<Account[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchAccounts = async () => {
+            try {
+                const response = await fetch('/api/Financial/account-value-and-nickname');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch accounts');
+                }
+                const data = await response.json();
+                setAccounts(data);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'An error occurred');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchAccounts();
+    }, []);
+
+    const totalValue = accounts.reduce((sum, acc) => sum + (acc.accountValue > 0 ? acc.accountValue : 0), 0);
+    const totalDebt = accounts.reduce((sum, acc) => sum + (acc.accountValue < 0 ? acc.accountValue : 0), 0);
+
+    // Group accounts by type
+    const checkingAccounts = accounts.filter(acc => acc.type === "Checking");
+    const savingsAccounts = accounts.filter(acc => acc.type === "Savings");
+    const emergencyAccounts = accounts.filter(acc => acc.type === "Emergency Fund");
+    const investmentAccounts = accounts.filter(acc => acc.type === "Investment");
+    const creditCardAccounts = accounts.filter(acc => acc.type === "Credit Card");
 
     return (
         <div className="flex h-[calc(100vh-120px)] gap-6">
@@ -52,11 +90,13 @@ const Accounts: React.FC = () => {
                     <div className="flex gap-16">
                         <div>
                             <p className="text-sm text-gray-400 mb-1">Total Account Value</p>
-                            <h2 className="text-3xl font-medium">${totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-400 mb-1">Total Debt</p>
-                            <h2 className="text-3xl font-medium text-red-400">${totalDebt.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
+                            {loading ? (
+                                <h2 className="text-3xl font-medium">Loading...</h2>
+                            ) : error ? (
+                                <h2 className="text-3xl font-medium text-red-400">Error</h2>
+                            ) : (
+                                <h2 className="text-3xl font-medium">${totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
+                            )}
                         </div>
                     </div>
                     <hr className="border-t border-gray-700 my-4" />
@@ -64,91 +104,135 @@ const Accounts: React.FC = () => {
 
                 {/* Account List - Grouped by Category */}
                 <div className="px-4 pb-4">
-                    <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">Cash</h2>
-                    <div className="space-y-2 mb-6">
-                        {mockAccounts.slice(0, 3).map((account) => (
-                            <div 
-                                key={account.id}
-                                className="bg-gray-800 rounded-lg p-3 border border-gray-700 hover:border-gray-600 transition-colors cursor-pointer"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3 flex-1">
-                                        <div className={`w-10 h-10 rounded-full ${account.color} flex items-center justify-center text-lg`}>
-                                            {account.icon}
-                                        </div>
-                                        <div className="flex-1">
-                                            <h3 className="font-medium text-sm">{account.name}</h3>
-                                            <p className="text-xs text-gray-400">{account.institution}</p>
-                                        </div>
+                    {loading ? (
+                        <div className="text-center py-8 text-gray-400">Loading accounts...</div>
+                    ) : error ? (
+                        <div className="text-center py-8 text-red-400">{error}</div>
+                    ) : (
+                        <>
+                            {checkingAccounts.length > 0 && (
+                                <>
+                                    <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">Checking</h2>
+                                    <div className="space-y-2 mb-6">
+                                        {checkingAccounts.map((account, index) => {
+                                            const style = getAccountStyle(account.type);
+                                            return (
+                                                <AccountCard
+                                                    key={index}
+                                                    institution="Bank Account"
+                                                    accountName={account.nickName}
+                                                    lastUpdated="Recently"
+                                                    balance={account.accountValue}
+                                                    icon={style.icon}
+                                                    color={style.color}
+                                                />
+                                            );
+                                        })}
                                     </div>
-                                    <div className="text-right">
-                                        <p className="font-medium">${account.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                                        <p className="text-xs text-gray-400">{account.lastUpdated}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                                </>
+                            )}
 
-                    <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">Credit Cards</h2>
-                    <div className="space-y-2 mb-6">
-                        {mockAccounts.slice(3, 4).map((account) => (
-                            <div 
-                                key={account.id}
-                                className="bg-gray-800 rounded-lg p-3 border border-gray-700 hover:border-gray-600 transition-colors cursor-pointer"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3 flex-1">
-                                        <div className={`w-10 h-10 rounded-full ${account.color} flex items-center justify-center text-lg`}>
-                                            {account.icon}
-                                        </div>
-                                        <div className="flex-1">
-                                            <h3 className="font-medium text-sm">{account.name}</h3>
-                                            <p className="text-xs text-gray-400">{account.institution}</p>
-                                        </div>
+                            {savingsAccounts.length > 0 && (
+                                <>
+                                    <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">Savings</h2>
+                                    <div className="space-y-2 mb-6">
+                                        {savingsAccounts.map((account, index) => {
+                                            const style = getAccountStyle(account.type);
+                                            return (
+                                                <AccountCard
+                                                    key={index}
+                                                    institution="Bank Account"
+                                                    accountName={account.nickName}
+                                                    lastUpdated="Recently"
+                                                    balance={account.accountValue}
+                                                    icon={style.icon}
+                                                    color={style.color}
+                                                />
+                                            );
+                                        })}
                                     </div>
-                                    <div className="text-right">
-                                        <p className="font-medium text-red-400">${Math.abs(account.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                                        <p className="text-xs text-gray-400">{account.lastUpdated}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                                </>
+                            )}
 
-                    <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">Investments</h2>
-                    <div className="space-y-2 mb-6">
-                        {mockAccounts.slice(4).map((account) => (
-                            <div 
-                                key={account.id}
-                                className="bg-gray-800 rounded-lg p-3 border border-gray-700 hover:border-gray-600 transition-colors cursor-pointer"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3 flex-1">
-                                        <div className={`w-10 h-10 rounded-full ${account.color} flex items-center justify-center text-lg`}>
-                                            {account.icon}
-                                        </div>
-                                        <div className="flex-1">
-                                            <h3 className="font-medium text-sm">{account.name}</h3>
-                                            <p className="text-xs text-gray-400">{account.institution}</p>
-                                        </div>
+                            {emergencyAccounts.length > 0 && (
+                                <>
+                                    <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">Emergency Fund</h2>
+                                    <div className="space-y-2 mb-6">
+                                        {emergencyAccounts.map((account, index) => {
+                                            const style = getAccountStyle(account.type);
+                                            return (
+                                                <AccountCard
+                                                    key={index}
+                                                    institution="Emergency Fund"
+                                                    accountName={account.nickName}
+                                                    lastUpdated="Recently"
+                                                    balance={account.accountValue}
+                                                    icon={style.icon}
+                                                    color={style.color}
+                                                />
+                                            );
+                                        })}
                                     </div>
-                                    <div className="text-right">
-                                        <p className="font-medium">${account.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                                        <p className="text-xs text-gray-400">{account.lastUpdated}</p>
+                                </>
+                            )}
+
+                            {creditCardAccounts.length > 0 && (
+                                <>
+                                    <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">Credit Cards</h2>
+                                    <div className="space-y-2 mb-6">
+                                        {creditCardAccounts.map((account, index) => {
+                                            const style = getAccountStyle(account.type);
+                                            return (
+                                                <AccountCard
+                                                    key={index}
+                                                    institution="Credit Card"
+                                                    accountName={account.nickName}
+                                                    lastUpdated="Recently"
+                                                    balance={account.accountValue}
+                                                    icon={style.icon}
+                                                    color={style.color}
+                                                />
+                                            );
+                                        })}
                                     </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                                </>
+                            )}
+
+                            {investmentAccounts.length > 0 && (
+                                <>
+                                    <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">Investments</h2>
+                                    <div className="space-y-2 mb-6">
+                                        {investmentAccounts.map((account, index) => {
+                                            const style = getAccountStyle(account.type);
+                                            return (
+                                                <AccountCard
+                                                    key={index}
+                                                    institution="Investment Account"
+                                                    accountName={account.nickName}
+                                                    lastUpdated="Recently"
+                                                    balance={account.accountValue}
+                                                    icon={style.icon}
+                                                    color={style.color}
+                                                />
+                                            );
+                                        })}
+                                    </div>
+                                </>
+                            )}
+
+                            
+                        </>
+                    )}
 
                     {/* Total Summary at Bottom */}
-                    <div className="mt-6 pt-4 border-t border-gray-700">
-                        <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-400">Net Worth</span>
-                            <span className="text-xl font-medium">${(totalValue + totalDebt).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    {!loading && !error && (
+                        <div className="mt-6 pt-4 border-t border-gray-700">
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm text-gray-400">Net Worth</span>
+                                <span className="text-xl font-medium">${(totalValue + totalDebt).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
 
